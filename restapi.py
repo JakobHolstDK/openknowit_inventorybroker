@@ -1,13 +1,22 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 import libvirt
+import os
+
+mongoserver = os.getenv("MONGO")
+
 
 app = Flask(__name__)
 
 # MongoDB configuration
-client = MongoClient('mongodb://localhost:27017/')
-db = client['kvm_db']
-connections_collection = db['connections']
+client = MongoClient('mongodb://prodmongo001.openknowit.com:27017/')
+try:
+  db = client['kvm_db']
+  connections_collection = db['connections']
+except:
+    print("Error connection to mongo at %s" % mongoserver)
+    exit(1)
+    
 
 @app.route('/kvm/connection', methods=['POST'])
 def create_kvm_connection():
